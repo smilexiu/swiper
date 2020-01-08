@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轮播图</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            touch-action: none;
+        }
+        div{
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        ul{
+            list-style: none;
+            width: 500%;
+            display: flex;
+            justify-content: flex-start;
+            position: relative;
+            left: 0;
+            top: 0;
+        }
+        ul>li{
+            flex: 1;
+        }
+        ul>li>img{
+            width: 100%;
+            vertical-align: bottom;
+        }
+        div>p{
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: space-between;
+        }
+        div>p>span{
+            display: inline-block;
+            width: 30px;
+            height: 50px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 30px;
+            color: #fff;
+            background: rgba(0,0,0,0.3);
+        }
+        ol{
+            list-style: none;
+            position: absolute;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: flex-start;
+        }
+        ol>li{
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            margin: 0 5px;
+        }
+        ol>.active{
+            background: #f40;
+        }
+    </style>
+    <script src="js/zepto.js"></script>
+    <script src="js/selector.js"></script>
+    <script src="js/event.js"></script>
+    <script src="js/touch.js"></script>
+    <script src="js/fx.js"></script>
+
+</head>
+<body>
+<div>
+    <ul>
+        <li><img src="images/img1.jpg" alt=""></li>
+        <li><img src="images/img2.jpg" alt=""></li>
+        <li><img src="images/img3.jpg" alt=""></li>
+        <li><img src="images/img4.jpg" alt=""></li>
+        <li><img src="images/img1.jpg" alt=""></li>
+    </ul>
+    <p>
+        <span class="left-btn">&lt;</span>
+        <span class="right-btn">&gt;</span>
+    </p>
+    <ol>
+        <li class="active"></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ol>
+</div>
+<script>
+    //定义变量保存对当前得索引
+    let currentIndex = 0;
+    //2.定义变量保存图片宽度
+    let itemWidth = $("ul>li").width();
+    //3.定义变量保存最大的索引
+    let maxIndex = $("ul>li").length - 1;
+    $(".left-btn").click(function () {
+        currentIndex--;
+        if(currentIndex < 0){
+            $("ul").css({left: -maxIndex * itemWidth});
+            currentIndex = maxIndex - 1;
+        }
+        $("ul").animate({left: -currentIndex * itemWidth}, 500);
+        $("ol>li").eq(currentIndex).addClass("active").siblings().removeClass();
+    });
+    $(".right-btn").click(function () {
+        currentIndex++;
+        if(currentIndex > maxIndex){
+            $("ul").css({left: 0});
+            currentIndex = 1;
+        }
+        $("ul").animate({left: -currentIndex * itemWidth}, 500);
+        let index = currentIndex === 4 ? 0 : currentIndex;
+        $("ol>li").eq(index).addClass("active").siblings().removeClass();
+    });
+</script>
+</body>
+</html>
