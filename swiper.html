@@ -39,6 +39,8 @@
             transform: translateY(-50%);
             display: flex;
             justify-content: space-between;
+            /*background: deepskyblue;*/
+            pointer-events: none;
         }
         div>p>span{
             display: inline-block;
@@ -49,6 +51,7 @@
             font-size: 30px;
             color: #fff;
             background: rgba(0,0,0,0.3);
+            pointer-events: auto;
         }
         ol{
             list-style: none;
@@ -98,30 +101,78 @@
     </ol>
 </div>
 <script>
+    ;(function($){
+        $.extend($.fn, {
+            stop: function(){
+                this.css({transition: "none"});
+                return this;
+            },
+            isAnimation: function () {
+                let time = $("ul").css("transition-duration");
+                time = parseFloat(time);
+                return time !== 0;
+            }
+        })
+    })(Zepto)
+</script>
+<script>
     //定义变量保存对当前得索引
     let currentIndex = 0;
     //2.定义变量保存图片宽度
     let itemWidth = $("ul>li").width();
     //3.定义变量保存最大的索引
     let maxIndex = $("ul>li").length - 1;
+    //4.监听按钮点击
     $(".left-btn").click(function () {
+        clearInterval(timerId);
+        if($(this).isAnimation()){return}
         currentIndex--;
         if(currentIndex < 0){
             $("ul").css({left: -maxIndex * itemWidth});
             currentIndex = maxIndex - 1;
         }
-        $("ul").animate({left: -currentIndex * itemWidth}, 500);
+        $("ul").animate({left: -currentIndex * itemWidth}, 500, function () {
+            autoPlay();
+        });
         $("ol>li").eq(currentIndex).addClass("active").siblings().removeClass();
     });
     $(".right-btn").click(function () {
+        clearInterval(timerId);
+        if($(this).isAnimation()){return}
         currentIndex++;
         if(currentIndex > maxIndex){
             $("ul").css({left: 0});
             currentIndex = 1;
         }
-        $("ul").animate({left: -currentIndex * itemWidth}, 500);
+        $("ul").animate({left: -currentIndex * itemWidth}, 500, function () {
+            autoPlay();
+        });
         let index = currentIndex === 4 ? 0 : currentIndex;
         $("ol>li").eq(index).addClass("active").siblings().removeClass();
+    });
+    /*
+    * 注意点：在移动端中是没有移入和移出事件的
+    * */
+    //5.实现自动轮播
+    let timerId = null;
+    function autoPlay() {
+        timerId = setInterval(function () {
+            $(".right-btn").click();
+        }, 2000);
+    }
+    autoPlay();
+    $("ul").get(0).ontouchstart = function () {
+        clearInterval(timerId);
+    }
+    $("ul").get(0).ontouchend = function () {
+        autoPlay();
+    }
+    //6.实现轻扫切换
+    $("ul").swipeLeft(function () {
+        $(".right-btn").click();
+    });
+    $("ul").swipeRight(function () {
+        $(".left-btn").click();
     });
 </script>
 </body>
